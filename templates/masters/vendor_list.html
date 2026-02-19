@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Vendors - LittleCraftOne{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/masters/vendor-list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="vendor-list-page">
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Vendors</li>
+            </ol>
+        </nav>
+
+        <!-- Header Section -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="page-title">Manage Vendors</h1>
+                <p class="page-subtitle">View and manage all your flower vendors</p>
+            </div>
+            <a href="{% url 'add_vendor' %}" class="btn btn-add-vendor">
+                <i class="bi bi-plus-circle me-2"></i>Add New Vendor
+            </a>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-card mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input" id="searchVendor" placeholder="Search by name, area or pincode...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select filter-select" id="filterArea">
+                        <option value="">All Areas</option>
+                        <option value="Vasai West">Vasai West</option>
+                        <option value="Vasai East">Vasai East</option>
+                        <option value="Virar West">Virar West</option>
+                        <option value="Virar East">Virar East</option>
+                        <option value="Nallasopara West">Nallasopara West</option>
+                        <option value="Nallasopara East">Nallasopara East</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select filter-select" id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-reset-filters w-100" id="resetFilters">
+                        <i class="bi bi-x-circle me-2"></i>Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vendors Table -->
+        <div class="vendors-table-card">
+            <div class="table-responsive">
+                <table class="table vendors-table" id="vendorsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Vendor Name</th>
+                            <th>Contact</th>
+                            <th>Area</th>
+                            <th>Pincode</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vendorsTableBody">
+                        {% for vendor in vendors %}
+                            <tr>
+                                <td>#{{ vendor.id }}</td>
+                                <td>
+                                    <div class="vendor-name-cell">
+                                        <strong>{{ vendor.vendor_name }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="contact-info">
+                                        <div><i class="bi bi-telephone me-1"></i>{{ vendor.phone_no }}</div>
+                                        <div><i class="bi bi-envelope me-1"></i>{{ vendor.email }}</div>
+                                    </div>
+                                </td>
+                                <td>{{ vendor.area_name }}</td>
+                                <td>{{ vendor.pincode }}</td>
+                                <td>
+                                    {% if vendor.is_active == 1 %}
+                                    <span class="status-badge status-active">Active</span>
+                                    {% else %}
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{% url 'view_vendor' %}?vendor_id={{ vendor.encrypted_id }}" class="action-btn view-btn" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'edit_vendor' %}?vendor_id={{ vendor.encrypted_id }}" class="action-btn edit-btn" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button type="button" class="action-btn delete-btn" title="Delete" data-vendor-id="{{ vendor.encrypted_id }}" data-vendor-name="{{ vendor.vendor_name }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-shop empty-icon"></i>
+                                        <h5>No Vendors Found</h5>
+                                        <p>Get started by adding your first vendor</p>
+                                        <a href="{% url 'add_vendor' %}" class="btn btn-add-vendor mt-3">
+                                            <i class="bi bi-plus-circle me-2"></i>Add New Vendor
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteVendorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal-content">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body delete-modal-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-exclamation-triangle warning-icon"></i>
+                </div>
+                <p class="delete-message">Are you sure you want to delete <strong id="deleteVendorName"></strong>?</p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_vendor' %}" id="deleteVendorForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="vendor_id" id="deleteVendorId">
+                    <button type="submit" class="btn btn-delete">Delete Vendor</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/masters/vendor-list.js' %}"></script>
+{% endblock %}

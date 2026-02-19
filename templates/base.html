@@ -71,13 +71,13 @@
                                 <!-- ADMIN - Only show account/profile, NO cart/wishlist -->
                                 <a href="#" class="nav-icon-item" data-bs-toggle="modal" data-bs-target="#accountModal">
                                     <i class="bi bi-person-circle nav-icon"></i>
-                                    <span class="nav-icon-text">{{ user.first_name|default:'Admin' }}</span>
+                                    <span class="nav-icon-text">{{ user.full_name|default:'Admin' }}</span>
                                 </a>
                             {% else %}
                                 <!-- CUSTOMER - Show all customer features -->
                                 <a href="#" class="nav-icon-item" data-bs-toggle="modal" data-bs-target="#accountModal">
                                     <i class="bi bi-person-circle nav-icon"></i>
-                                    <span class="nav-icon-text">{{ user.first_name|default:'Account' }}</span>
+                                    <span class="nav-icon-text">{{ user.full_name|default:'Account' }}</span>
                                 </a>
                                 <a href="javascript:void(0);" class="nav-icon-item" data-bs-toggle="modal" data-bs-target="#wishlistModal">
                                     <i class="bi bi-heart nav-icon"></i>
@@ -153,67 +153,112 @@
                 <ul class="nav-menu">
                     <!-- Customer Menu (role_id = 2) -->
                     {% if user.is_authenticated and user.role_id == 2 %}
-                    <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
+                        <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
                     
                     <!-- Admin Menu (role_id = 1) -->
                     {% elif user.is_authenticated and user.role_id == 1 %}
-                    <li class="nav-menu-item"><a href="{% url 'admin_dashboard' %}" class="nav-menu-link {% if request.path == '/admin-dashboard/' %}active{% endif %}">Dashboard</a></li>
-                    
-                    <!-- Bouquets Dropdown -->
-                    <li class="nav-menu-item dropdown">
-                        <a href="#" class="nav-menu-link dropdown-toggle">
-                            Bouquets
-                            <i class="bi bi-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'add_bouquet' %}">
-                                <i class="bi bi-plus-circle"></i> Add Bouquet
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-list-ul"></i> Manage Bouquets
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-tags"></i> Categories
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-calendar-event"></i> Occasions
-                            </a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-menu-item"><a href="{% url 'admin_dashboard' %}" class="nav-menu-link {% if request.path == '/admin-dashboard/' %}active{% endif %}">Dashboard</a></li>
+                        
+                        <!-- Bouquets Dropdown -->
+                        <li class="nav-menu-item dropdown">
+                            <a href="#" class="nav-menu-link dropdown-toggle">
+                                Bouquets
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'add_bouquet' %}">
+                                    <i class="bi bi-plus-circle"></i> Add Bouquet
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-list-ul"></i> Manage Bouquets
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-tags"></i> Categories
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-calendar-event"></i> Occasions
+                                </a></li>
+                            </ul>
+                        </li>
 
-                    <!-- Masters Dropdown -->
-                    <li class="nav-menu-item dropdown">
-                        <a href="#" class="nav-menu-link dropdown-toggle">
-                            Masters
-                            <i class="bi bi-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-building"></i> Vendors
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-flower2"></i> Flowers
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-box"></i> Categories
-                            </a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-menu-item dropdown">
+                            <a href="#" class="nav-menu-link dropdown-toggle">
+                                Vendors
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'add_vendor' %}">
+                                    <i class="bi bi-plus-circle"></i> Add Vendor
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'vendor_list' %}">
+                                    <i class="bi bi-list-ul"></i> Manage Vendors
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'vendor_list' %}?status=active">
+                                    <i class="bi bi-check-circle"></i> Active Vendors
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'vendor_list' %}?status=inactive">
+                                    <i class="bi bi-x-circle"></i> Inactive Vendors
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Occasions Dropdown - Add after Vendors or in Masters dropdown -->
+                        <li class="nav-menu-item dropdown">
+                            <a href="#" class="nav-menu-link dropdown-toggle">
+                                Occasions
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'add_occasion' %}">
+                                    <i class="bi bi-plus-circle"></i> Add Occasion
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'occasion_list' %}">
+                                    <i class="bi bi-list-ul"></i> Manage Occasions
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'occasion_list' %}?status=active">
+                                    <i class="bi bi-check-circle"></i> Active Occasions
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'occasion_list' %}?status=inactive">
+                                    <i class="bi bi-x-circle"></i> Inactive Occasions
+                                </a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Masters Dropdown -->
+                        <li class="nav-menu-item dropdown">
+                            <a href="#" class="nav-menu-link dropdown-toggle">
+                                Masters
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-building"></i> Vendors
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-flower2"></i> Flowers
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-box"></i> Categories
+                                </a></li>
+                            </ul>
+                        </li>
                     
                     <!-- Not Logged In - Show default menu -->
                     {% else %}
-                    <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
-                    <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
+                        <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
+                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -228,22 +273,22 @@
                 <div class="modal-header account-modal-header">
                     <div class="account-modal-title-section w-100">
                         {% if user.is_authenticated %}
-                        <!-- Logged In User Header - Without Photo -->
-                        <div class="d-flex align-items-center">
-                            <div class="user-avatar-placeholder me-3">
-                                <div class="avatar-placeholder rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                    <span style="font-size: 24px;">{{ user.first_name|first|default:user.email|first|upper }}</span>
+                            <!-- Logged In User Header - Without Photo -->
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar-placeholder me-3">
+                                    <div class="avatar-placeholder rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <span style="font-size: 24px;">{{ user.first_name|first|default:user.email|first|upper }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="modal-title account-modal-title mb-1">Welcome back, {{ user.first_name|default:'Guest' }}!</h5>
+                                    <p class="account-modal-subtitle mb-0">{{ user.email }}</p>
                                 </div>
                             </div>
-                            <div>
-                                <h5 class="modal-title account-modal-title mb-1">Welcome back, {{ user.first_name|default:'Guest' }}!</h5>
-                                <p class="account-modal-subtitle mb-0">{{ user.email }}</p>
-                            </div>
-                        </div>
                         {% else %}
-                        <!-- Not Logged In Header -->
-                        <h5 class="modal-title account-modal-title" id="accountModalLabel">Welcome to LittleCraftOne</h5>
-                        <p class="account-modal-subtitle">Access account & manage orders</p>
+                            <!-- Not Logged In Header -->
+                            <h5 class="modal-title account-modal-title" id="accountModalLabel">Welcome to LittleCraftOne</h5>
+                            <p class="account-modal-subtitle">Access account & manage orders</p>
                         {% endif %}
                     </div>
                     <button type="button" class="btn-close account-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -280,111 +325,125 @@
                     <!-- Account Menu Items -->
                     <div class="account-menu-list">
                         {% if user.is_authenticated %}
-                        <!-- Logged In User Menu Items - WITHOUT profile URL -->
-                        <div class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-person-circle"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">My Profile</span>
-                                <span class="account-menu-desc">{{ user.email }}</span>
-                            </div>
-                        </div>
-                        
-                        <a href="#" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">My Orders</span>
-                                <span class="account-menu-desc">Track & manage your orders</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
-                        
-                        <a href="#" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-heart"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">My Wishlist</span>
-                                <span class="account-menu-desc">Your saved items</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
-                        
-                        <a href="#" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-arrow-return-left"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">Returns & Refunds</span>
-                                <span class="account-menu-desc">Manage returns & refund requests</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
-                        
-                        <a href="#" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-gear"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">Settings</span>
-                                <span class="account-menu-desc">Account preferences</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
+                            {% if user.role_id == 2 %}
+                                <!-- CUSTOMER Menu Items (role_id = 2) -->
+                                <div class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">My Profile</span>
+                                        <span class="account-menu-desc">{{ user.email }}</span>
+                                    </div>
+                                </div>
+                                
+                                <a href="#" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">My Orders</span>
+                                        <span class="account-menu-desc">Track & manage your orders</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-heart"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">My Wishlist</span>
+                                        <span class="account-menu-desc">Your saved items</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-arrow-return-left"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">Returns & Refunds</span>
+                                        <span class="account-menu-desc">Manage returns & refund requests</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-gear"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">Settings</span>
+                                        <span class="account-menu-desc">Account preferences</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
+                            {% elif user.role_id == 1 %}
+                                <!-- ADMIN Menu Items (role_id = 1) - Only Dashboard -->
+                                <a href="{% url 'admin_dashboard' %}" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-speedometer2"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">Admin Dashboard</span>
+                                        <span class="account-menu-desc">Manage your store</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
 
-                        {% if user.user_type == 'admin' %}
-                        <a href="{% url 'admin_dashboard' %}" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-speedometer2"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">Admin Dashboard</span>
-                                <span class="account-menu-desc">Manage your store</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
-                        {% endif %}
-                        
+                                <!-- ADD THIS NEW VENDORS LINK IN ADMIN ACCOUNT MENU -->
+                                <a href="{% url 'vendor_list' %}" class="account-menu-item">
+                                    <div class="account-menu-icon">
+                                        <i class="bi bi-truck"></i>
+                                    </div>
+                                    <div class="account-menu-text">
+                                        <span class="account-menu-title">Vendors</span>
+                                        <span class="account-menu-desc">Manage your vendors</span>
+                                    </div>
+                                    <div class="account-menu-arrow">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </a>
+                            {% endif %}
                         {% else %}
-                        <!-- Not Logged In Menu Items -->
-                        <a href="{% url 'login' %}" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-person-circle"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">Sign In</span>
-                                <span class="account-menu-desc">Access your account</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
-                        
-                        <a href="{% url 'register' %}" class="account-menu-item">
-                            <div class="account-menu-icon">
-                                <i class="bi bi-person-plus"></i>
-                            </div>
-                            <div class="account-menu-text">
-                                <span class="account-menu-title">Create Account</span>
-                                <span class="account-menu-desc">Join LittleCraftOne</span>
-                            </div>
-                            <div class="account-menu-arrow">
-                                <i class="bi bi-chevron-right"></i>
-                            </div>
-                        </a>
+                            <!-- Not Logged In Menu Items -->
+                            <a href="{% url 'login' %}" class="account-menu-item">
+                                <div class="account-menu-icon">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="account-menu-text">
+                                    <span class="account-menu-title">Sign In</span>
+                                    <span class="account-menu-desc">Access your account</span>
+                                </div>
+                                <div class="account-menu-arrow">
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="{% url 'register' %}" class="account-menu-item">
+                                <div class="account-menu-icon">
+                                    <i class="bi bi-person-plus"></i>
+                                </div>
+                                <div class="account-menu-text">
+                                    <span class="account-menu-title">Create Account</span>
+                                    <span class="account-menu-desc">Join LittleCraftOne</span>
+                                </div>
+                                <div class="account-menu-arrow">
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </a>
                         {% endif %}
                     </div>
                     
@@ -693,6 +752,53 @@
                     </a></li>
                     <li><a href="#" class="mobile-dropdown-item">
                         <i class="bi bi-calendar-event me-2"></i>Occasions
+                    </a></li>
+                </ul>
+            </li>
+
+            <!-- ADD THIS NEW VENDORS DROPDOWN FOR MOBILE -->
+            <!-- Vendors Dropdown (Mobile) -->
+            <li class="mobile-nav-menu-item mobile-dropdown">
+                <a href="javascript:void(0);" class="mobile-nav-menu-link mobile-dropdown-toggle" onclick="toggleMobileDropdown(event, this)">
+                    <span><i class="bi bi-truck me-2"></i>Vendors</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="mobile-dropdown-menu">
+                    <li><a href="{% url 'add_vendor' %}" class="mobile-dropdown-item">
+                        <i class="bi bi-plus-circle me-2"></i>Add Vendor
+                    </a></li>
+                    <li><a href="{% url 'vendor_list' %}" class="mobile-dropdown-item">
+                        <i class="bi bi-list-ul me-2"></i>Manage Vendors
+                    </a></li>
+                    <li><hr class="mobile-dropdown-divider"></li>
+                    <li><a href="{% url 'vendor_list' %}?status=active" class="mobile-dropdown-item">
+                        <i class="bi bi-check-circle me-2"></i>Active Vendors
+                    </a></li>
+                    <li><a href="{% url 'vendor_list' %}?status=inactive" class="mobile-dropdown-item">
+                        <i class="bi bi-x-circle me-2"></i>Inactive Vendors
+                    </a></li>
+                </ul>
+            </li>
+
+            <!-- Occasions Dropdown (Mobile) -->
+            <li class="mobile-nav-menu-item mobile-dropdown">
+                <a href="javascript:void(0);" class="mobile-nav-menu-link mobile-dropdown-toggle" onclick="toggleMobileDropdown(event, this)">
+                    <span><i class="bi bi-calendar-event me-2"></i>Occasions</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="mobile-dropdown-menu">
+                    <li><a href="{% url 'add_occasion' %}" class="mobile-dropdown-item">
+                        <i class="bi bi-plus-circle me-2"></i>Add Occasion
+                    </a></li>
+                    <li><a href="{% url 'occasion_list' %}" class="mobile-dropdown-item">
+                        <i class="bi bi-list-ul me-2"></i>Manage Occasions
+                    </a></li>
+                    <li><hr class="mobile-dropdown-divider"></li>
+                    <li><a href="{% url 'occasion_list' %}?status=active" class="mobile-dropdown-item">
+                        <i class="bi bi-check-circle me-2"></i>Active Occasions
+                    </a></li>
+                    <li><a href="{% url 'occasion_list' %}?status=inactive" class="mobile-dropdown-item">
+                        <i class="bi bi-x-circle me-2"></i>Inactive Occasions
                     </a></li>
                 </ul>
             </li>

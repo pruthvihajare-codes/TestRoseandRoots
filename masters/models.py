@@ -19,7 +19,6 @@ class Occasion(models.Model):
     def __str__(self):
         return self.name or f"Occasion {self.id}"
 
-
 class Bouquet(models.Model):
     id = models.AutoField(primary_key=True)
 
@@ -82,7 +81,6 @@ class BouquetOccasion(models.Model):
     def __str__(self):
         return f"{self.bouquet} - {self.occasion}"
 
-
 class BouquetImage(models.Model):
     id = models.AutoField(primary_key=True)
 
@@ -109,7 +107,6 @@ class BouquetImage(models.Model):
     def __str__(self):
         return f"Image for {self.bouquet.name}" if self.bouquet else f"Image {self.id}"
 
-
 class Vendor(models.Model):
     id = models.AutoField(primary_key=True)
 
@@ -132,3 +129,21 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.vendor_name or f"Vendor {self.id}"
+
+class DeliveryPincode(models.Model):
+    pincode = models.CharField(max_length=6, unique=True)
+    place_name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=150, null=True, blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=150, null=True, blank=True)
+
+    class Meta:
+        db_table = 'delivery_pincode'
+
+    def __str__(self):
+        return f"{self.pincode} - {self.place_name}"
+

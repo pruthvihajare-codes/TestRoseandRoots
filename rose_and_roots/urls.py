@@ -34,4 +34,19 @@ urlpatterns = [
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('dashboard/', dashboard, name='dashboard'),
     path('bouquet/add/', add_bouquet, name='add_bouquet'),
+    
+    # Vendor Management
+    path('vendors/', vendor_list, name='vendor_list'),
+    path('vendors/add/', add_vendor, name='add_vendor'),
+    path('view_vendor/', view_vendor, name='view_vendor'),  # Changed to str
+    path('edit_vendor/', edit_vendor, name='edit_vendor'),  # Changed to str
+    path('delete_vendor/', delete_vendor, name='delete_vendor'),
+
+    # Add these to your urls.py
+
+    path('occasions/', occasion_list, name='occasion_list'),
+    path('occasions/add/', add_occasion, name='add_occasion'),
+    path('view_occasion/', view_occasion, name='view_occasion'),
+    path('edit_occasion/', edit_occasion, name='edit_occasion'),
+    path('delete_occasion/', delete_occasion, name='delete_occasion'),
 ]

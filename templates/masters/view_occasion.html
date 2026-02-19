@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}View Occasion - LittleCraftOne{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/masters/occasion-view.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="occasion-view-page">
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'occasion_list' %}">Occasions</a></li>
+                <li class="breadcrumb-item active" aria-current="page">View Occasion</li>
+            </ol>
+        </nav>
+
+        <!-- Occasion Details Card -->
+        <div class="occasion-details-card">
+            <!-- Header -->
+            <div class="details-header">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon">
+                        <i class="bi {{ occasion.icon|default:'bi-calendar-event' }}"></i>
+                    </div>
+                    <div>
+                        <h1 class="occasion-name">{{ occasion.name }}</h1>
+                        <p class="occasion-id">Occasion ID: #{{ occasion.id }}</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="{% url 'edit_occasion' %}?occasion_id={{ encrypted_id }}" class="btn btn-edit">
+                        <i class="bi bi-pencil-square me-2"></i>Edit
+                    </a>
+                    <button type="button" class="btn btn-delete" data-occasion-id="{{ encrypted_id }}" data-occasion-name="{{ occasion.name }}">
+                        <i class="bi bi-trash me-2"></i>Delete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="status-section">
+                {% if occasion.is_active == 1 %}
+                <span class="status-badge status-active">
+                    <i class="bi bi-check-circle me-1"></i>Active
+                </span>
+                {% else %}
+                <span class="status-badge status-inactive">
+                    <i class="bi bi-x-circle me-1"></i>Inactive
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Details Grid -->
+            <div class="details-grid">
+                <!-- Basic Information -->
+                <div class="details-section">
+                    <h5 class="section-title">
+                        <i class="bi bi-info-circle me-2"></i>Occasion Information
+                    </h5>
+                    <div class="details-list">
+                        <div class="detail-item">
+                            <span class="detail-label">Occasion Name:</span>
+                            <span class="detail-value">{{ occasion.name }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Slug:</span>
+                            <span class="detail-value"><code>{{ occasion.slug }}</code></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Icon:</span>
+                            <span class="detail-value">
+                                {% if occasion.icon %}
+                                <i class="bi {{ occasion.icon }} me-2"></i>{{ occasion.icon }}
+                                {% else %}
+                                <span class="text-muted">No icon set</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata -->
+                <div class="details-section">
+                    <h5 class="section-title">
+                        <i class="bi bi-clock-history me-2"></i>Metadata
+                    </h5>
+                    <div class="details-list">
+                        <div class="detail-item">
+                            <span class="detail-label">Created At:</span>
+                            <span class="detail-value">{{ occasion.created_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Last Updated:</span>
+                            <span class="detail-value">{{ occasion.updated_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="back-section">
+                <a href="{% url 'occasion_list' %}" class="btn btn-back">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Occasions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteOccasionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal-content">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body delete-modal-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-exclamation-triangle warning-icon"></i>
+                </div>
+                <p class="delete-message">Are you sure you want to delete <strong id="deleteOccasionName"></strong>?</p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_occasion' %}" id="deleteOccasionForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="occasion_id" id="deleteOccasionId">
+                    <button type="submit" class="btn btn-delete">Delete Occasion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/masters/occasion-view.js' %}"></script>
+{% endblock %}

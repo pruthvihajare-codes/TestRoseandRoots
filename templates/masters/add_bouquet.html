@@ -11,18 +11,20 @@
 
 {% block content %}
 
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="container mt-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Add Bouquet</li>
-        </ol>
-    </nav>
-
     <div class="bouquet-form-wrapper">
         <div class="container">
+            
             <div class="row justify-content-center">
-                <div class="col-lg-10">
+
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="container mt-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Bouquet</li>
+                    </ol>
+                </nav>
+
+                <div class="">
                     <!-- Form Card -->
                     <div class="bouquet-form-card animate-slide-up">
                         

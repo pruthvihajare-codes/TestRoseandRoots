@@ -73,6 +73,8 @@ TEMPLATES = [
     },
 ]
 
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', 'oRVCHTumzesh-E71A-bAnjjEDuIlkceL6dvAYiCShp0=')
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

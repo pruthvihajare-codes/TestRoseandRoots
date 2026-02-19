@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Occasions - LittleCraftOne{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/masters/occasion-list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="occasion-list-page">
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Occasions</li>
+            </ol>
+        </nav>
+
+        <!-- Header Section -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="page-title">Manage Occasions</h1>
+                <p class="page-subtitle">View and manage all occasion categories</p>
+            </div>
+            <a href="{% url 'add_occasion' %}" class="btn btn-add-occasion">
+                <i class="bi bi-plus-circle me-2"></i>Add New Occasion
+            </a>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-card mb-4">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input" id="searchOccasion" placeholder="Search by occasion name...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select filter-select" id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-reset-filters w-100" id="resetFilters">
+                        <i class="bi bi-x-circle me-2"></i>Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Occasions Table -->
+        <div class="occasions-table-card">
+            <div class="table-responsive">
+                <table class="table occasions-table" id="occasionsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Occasion Name</th>
+                            <th>Slug</th>
+                            <th>Icon</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="occasionsTableBody">
+                        {% for occasion in occasions %}
+                            <tr>
+                                <td>#{{ occasion.id }}</td>
+                                <td>
+                                    <div class="occasion-name-cell">
+                                        <strong>{{ occasion.name }}</strong>
+                                    </div>
+                                </td>
+                                <td><code>{{ occasion.slug }}</code></td>
+                                <td>
+                                    {% if occasion.icon %}
+                                        <i class="bi {{ occasion.icon }}"></i> {{ occasion.icon }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if occasion.is_active == 1 %}
+                                    <span class="status-badge status-active">Active</span>
+                                    {% else %}
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ occasion.created_at|date:"d M Y" }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{% url 'view_occasion' %}?occasion_id={{ occasion.encrypted_id }}" class="action-btn view-btn" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'edit_occasion' %}?occasion_id={{ occasion.encrypted_id }}" class="action-btn edit-btn" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button type="button" class="action-btn delete-btn" title="Delete" data-occasion-id="{{ occasion.encrypted_id }}" data-occasion-name="{{ occasion.name }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-calendar-event empty-icon"></i>
+                                        <h5>No Occasions Found</h5>
+                                        <p>Get started by adding your first occasion</p>
+                                        <a href="{% url 'add_occasion' %}" class="btn btn-add-occasion mt-3">
+                                            <i class="bi bi-plus-circle me-2"></i>Add New Occasion
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteOccasionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal-content">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body delete-modal-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-exclamation-triangle warning-icon"></i>
+                </div>
+                <p class="delete-message">Are you sure you want to delete <strong id="deleteOccasionName"></strong>?</p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_occasion' %}" id="deleteOccasionForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="occasion_id" id="deleteOccasionId">
+                    <button type="submit" class="btn btn-delete">Delete Occasion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/masters/occasion-list.js' %}"></script>
+{% endblock %}

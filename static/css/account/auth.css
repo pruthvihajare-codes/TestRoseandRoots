@@ -29,31 +29,21 @@
 }
 
 /* Breadcrumb */
+/* Breadcrumb */
 .breadcrumb {
-    background: none;
-    padding: 0;
-    margin-bottom: 0;
+    padding: 12px 0;
 }
 
 .breadcrumb-item a {
-    color: var(--primary-color);
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: 500;
-    transition: var(--transition);
-}
-
-.breadcrumb-item a:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
 }
 
 .breadcrumb-item.active {
-    color: var(--secondary-color);
+    color: var(--default-color);
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
-    color: var(--secondary-color);
-}
 
 /* Auth Card */
 .auth-card {

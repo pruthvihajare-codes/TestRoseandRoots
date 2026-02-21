@@ -33,7 +33,13 @@ urlpatterns = [
     # masters
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('dashboard/', dashboard, name='dashboard'),
+    
+    # Bouquet Management
+    path('bouquets/', bouquet_list, name='bouquet_list'),
     path('bouquet/add/', add_bouquet, name='add_bouquet'),
+    path('view_bouquet/', view_bouquet, name='view_bouquet'),
+    path('edit_bouquet/', edit_bouquet, name='edit_bouquet'),
+    path('delete_bouquet/', delete_bouquet, name='delete_bouquet'),
     
     # Vendor Management
     path('vendors/', vendor_list, name='vendor_list'),
@@ -49,4 +55,13 @@ urlpatterns = [
     path('view_occasion/', view_occasion, name='view_occasion'),
     path('edit_occasion/', edit_occasion, name='edit_occasion'),
     path('delete_occasion/', delete_occasion, name='delete_occasion'),
+    
+    # Add these to your urls.py
+
+    path('users/', user_list, name='user_list'),
+    path('users/add/', add_user, name='add_user'),
+    path('view_user/', view_user, name='view_user'),
+    path('edit_user/', edit_user, name='edit_user'),
+    path('delete_user/', delete_user, name='delete_user'),
+    path('toggle_user_status/', toggle_user_status, name='toggle_user_status'),
 ]

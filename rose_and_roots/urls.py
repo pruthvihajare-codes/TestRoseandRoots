@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from accounts.views import *
 from masters.views import *
+from store.views import *
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', home, name='home'),
@@ -64,4 +66,15 @@ urlpatterns = [
     path('edit_user/', edit_user, name='edit_user'),
     path('delete_user/', delete_user, name='delete_user'),
     path('toggle_user_status/', toggle_user_status, name='toggle_user_status'),
+    
+    # store app
+    
+    path('shop/', shop_view, name='shop'),
+    path('product/', product_detail, name='product_detail'),
+    
+    # Media files
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

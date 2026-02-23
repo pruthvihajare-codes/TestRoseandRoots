@@ -157,7 +157,7 @@
                     {% if user.is_authenticated and user.role_id == 2 %}
                         <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'shop' %}" class="nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
@@ -281,7 +281,7 @@
                     {% else %}
                         <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Category</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'shop' %}" class="nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Cart</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Checkout</a></li>
                         <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
@@ -743,7 +743,7 @@
 
                 <li class="mobile-nav-menu-item"><a href="/" class="mobile-nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">About</a></li>
-                <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Category</a></li>
+                <li class="nav-menu-item"><a href="{% url 'shop' %}" class="nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Cart</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Checkout</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Contact</a></li>
@@ -873,7 +873,7 @@
 
                 <li class="mobile-nav-menu-item"><a href="/" class="mobile-nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">About</a></li>
-                <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Category</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'shop' %}" class="mobile-nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Cart</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Checkout</a></li>
                 <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Contact</a></li>

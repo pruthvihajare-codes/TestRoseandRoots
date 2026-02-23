@@ -1803,3 +1803,5 @@ def toggle_user_status(request):
     except Exception as e:
         logger.exception(f"Unexpected error in toggle_user_status: {str(e)}")
         return JsonResponse({'success': False, 'message': 'Something went wrong.'})
+    
+    

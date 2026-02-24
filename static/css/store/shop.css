@@ -1173,3 +1173,64 @@
         font-size: 0.8rem;
     }
 }
+
+/* Cart Badge Styling - Fix centering */
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--danger-color, #dc3545);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+/* If the badge is hidden */
+.cart-badge[style*="display: none"] {
+    display: none !important;
+}
+
+/* Nav icon positioning */
+.nav-icon-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--default-color);
+    padding: 5px 10px;
+}
+
+.nav-icon {
+    font-size: 1.3rem;
+    margin-right: 5px;
+}
+
+.nav-icon-text {
+    font-size: 0.9rem;
+}
+
+/* Cart badge specific */
+.position-relative {
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .cart-badge {
+        top: -3px;
+        right: -3px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
+    }
+}

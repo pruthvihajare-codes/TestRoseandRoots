@@ -72,6 +72,22 @@ urlpatterns = [
     path('shop/', shop_view, name='shop'),
     path('product/', product_detail, name='product_detail'),
     
+    # Cart URLs
+    path('cart_view', cart_view, name='cart_view'),
+    path('add_to_cart', add_to_cart, name='add_to_cart'),
+    path('remove_from_cart', remove_from_cart, name='remove_from_cart'),
+    path('get_cart_count', get_cart_count, name='cart_count'),
+    path('clear_cart', clear_cart, name='clear_cart'),
+    path('cart_modal', cart_modal, name='cart_modal'),
+
+    # Checkout
+    path('checkout/', checkout, name='checkout'),
+    
+    # Admin utility (optional)
+    path('cart/update-price/<int:item_id>/', update_cart_item_price, name='update_cart_price'),
+    
+    path('place-order/', place_order, name='place_order'),
+    
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

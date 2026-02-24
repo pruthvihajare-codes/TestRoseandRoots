@@ -1,0 +1,470 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - LittleCraftOne{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/store/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page">
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'cart_view' %}">Cart</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="checkout-header text-center mb-5">
+            <h1 class="checkout-title">Checkout</h1>
+            <p class="checkout-subtitle">Complete your purchase</p>
+        </div>
+
+        <!-- Admin Access Denied -->
+        {% if user.is_authenticated and user.role_id == 1 %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="access-denied-card text-center py-5">
+                        <i class="bi bi-shield-lock" style="font-size: 64px; color: #dc3545; opacity: 0.5;"></i>
+                        <h2 class="mt-3">Access Denied</h2>
+                        <p class="text-muted">Admin accounts cannot place orders</p>
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary mt-3" style="background: var(--accent-color); border: none;">
+                            <i class="bi bi-speedometer2"></i> Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Guest User - Show Login Prompt -->
+        {% elif not user.is_authenticated %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="login-required-card text-center py-5">
+                        <i class="bi bi-box-arrow-in-right" style="font-size: 64px; color: var(--accent-color); opacity: 0.5;"></i>
+                        <h2 class="mt-3">Login Required</h2>
+                        <p class="text-muted">Please login to proceed with checkout</p>
+                        <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn-login-checkout mt-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Login to Checkout
+                        </a>
+                        <p class="mt-3">
+                            <a href="{% url 'register' %}?next={% url 'checkout' %}" class="text-muted">New user? Register here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Customer Logged In - Check if Cart is Empty -->
+        {% elif cart_items %}
+            <div class="row">
+                <!-- Left Side - Billing & Shipping Forms -->
+                <div class="col-lg-8 mb-4">
+                    <div class="checkout-forms">
+                        <!-- Login/Register Prompt (for guests) -->
+                        {% if not user.is_authenticated %}
+                        <div class="login-prompt mb-4">
+                            <div class="prompt-content">
+                                <i class="bi bi-person-circle"></i>
+                                <div>
+                                    <h5>Already have an account?</h5>
+                                    <p>Sign in for faster checkout</p>
+                                </div>
+                                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn-login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Checkout Form -->
+                        <form method="post" action="{% url 'place_order' %}" id="checkoutForm">
+                            {% csrf_token %}
+                            
+                            <!-- Contact Information -->
+                            <div class="checkout-section">
+                                <h5 class="section-title">
+                                    <i class="bi bi-envelope me-2"></i>Contact Information
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               value="{{ user.email|default:'' }}" {% if user.email %}readonly{% endif %} required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone Number <span class="required">*</span></label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" 
+                                               value="{{ user.phone|default:'' }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div class="checkout-section">
+                                <h5 class="section-title">
+                                    <i class="bi bi-truck me-2"></i>Shipping Address
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">First Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" 
+                                               value="{{ user.first_name|default:'' }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Last Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" 
+                                               value="{{ user.last_name|default:'' }}" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Address <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="address" name="address" 
+                                               placeholder="Street address, P.O. box" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="city" class="form-label">City <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="state" class="form-label">State <span class="required">*</span></label>
+                                        <select class="form-select" id="state" name="state" required>
+                                            <option value="">Select State</option>
+                                            <option value="Maharashtra">Maharashtra</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Karnataka">Karnataka</option>
+                                            <option value="Tamil Nadu">Tamil Nadu</option>
+                                            <option value="Gujarat">Gujarat</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="pincode" class="form-label">Pincode <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="pincode" name="pincode" 
+                                               maxlength="6" pattern="[0-9]{6}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Options -->
+                            <div class="checkout-section">
+                                <h5 class="section-title">
+                                    <i class="bi bi-clock me-2"></i>Delivery Options
+                                </h5>
+                                <div class="delivery-options">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery" id="standard" value="standard" checked>
+                                        <label class="form-check-label" for="standard">
+                                            <div>
+                                                <strong>Standard Delivery</strong>
+                                                <span class="delivery-time">3-5 business days</span>
+                                            </div>
+                                            <span class="delivery-price">₹150</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery" id="express" value="express">
+                                        <label class="form-check-label" for="express">
+                                            <div>
+                                                <strong>Express Delivery</strong>
+                                                <span class="delivery-time">1-2 business days</span>
+                                            </div>
+                                            <span class="delivery-price">₹299</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="delivery" id="same_day" value="same_day">
+                                        <label class="form-check-label" for="same_day">
+                                            <div>
+                                                <strong>Same Day Delivery</strong>
+                                                <span class="delivery-time">Order before 2 PM</span>
+                                            </div>
+                                            <span class="delivery-price">₹499</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="checkout-section">
+                                <h5 class="section-title">
+                                    <i class="bi bi-credit-card me-2"></i>Payment Method
+                                </h5>
+                                <div class="payment-methods">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" checked>
+                                        <label class="form-check-label" for="cod">
+                                            <i class="bi bi-cash"></i>
+                                            Cash on Delivery (COD)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="card" value="card">
+                                        <label class="form-check-label" for="card">
+                                            <i class="bi bi-credit-card"></i>
+                                            Credit/Debit Card
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="upi" value="upi">
+                                        <label class="form-check-label" for="upi">
+                                            <i class="bi bi-phone"></i>
+                                            UPI
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="netbanking" value="netbanking">
+                                        <label class="form-check-label" for="netbanking">
+                                            <i class="bi bi-bank"></i>
+                                            Net Banking
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Notes -->
+                            <div class="checkout-section">
+                                <h5 class="section-title">
+                                    <i class="bi bi-pencil me-2"></i>Order Notes (Optional)
+                                </h5>
+                                <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                          placeholder="Special instructions for delivery, gift message, etc."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Side - Order Summary -->
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h5 class="summary-title">Order Summary</h5>
+                        
+                        <!-- Cart Items Preview -->
+                        <div class="summary-items">
+                            {% for item in cart_items %}
+                            <div class="summary-item">
+                                <div class="item-info">
+                                    <span class="item-name">{{ item.name }}</span>
+                                    <span class="item-quantity">x1</span>
+                                </div>
+                                <span class="item-price">₹{{ item.price|floatformat:0 }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <div class="price-row">
+                                <span>Subtotal ({{ item_count }} items)</span>
+                                <span>₹{{ subtotal|floatformat:0 }}</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Shipping</span>
+                                <span id="shippingCost">₹{{ shipping|floatformat:0 }}</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Tax (GST 5%)</span>
+                                <span id="taxAmount">₹{{ tax|default:0|floatformat:0 }}</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Total</span>
+                                <span class="total-amount" id="totalAmount">₹{{ total|floatformat:0 }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Free Shipping Progress -->
+                        {% if subtotal < 999 %}
+                        <div class="free-shipping-progress">
+                            <p>Add ₹{{ 999|add:subtotal|floatformat:0 }} more for FREE shipping</p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {% widthratio subtotal 999 100 %}%"></div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="free-shipping-achieved">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>You've qualified for FREE shipping!</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Place Order Button -->
+                        <button type="submit" form="checkoutForm" class="btn-place-order">
+                            <i class="bi bi-lock"></i>
+                            Place Order • ₹<span id="placeOrderTotal">{{ total|floatformat:0 }}</span>
+                        </button>
+
+                        <!-- Secure Payment Note -->
+                        <div class="secure-note">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Your payment information is secure</span>
+                        </div>
+
+                        <!-- Accepted Payment Methods -->
+                        <div class="accepted-payments">
+                            <p>We accept</p>
+                            <div class="payment-icons">
+                                <i class="bi bi-credit-card"></i>
+                                <i class="bi bi-bank"></i>
+                                <i class="bi bi-paypal"></i>
+                                <i class="bi bi-google"></i>
+                                <i class="bi bi-apple"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Cart is Empty -->
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="empty-cart-checkout text-center py-5">
+                        <i class="bi bi-cart-x" style="font-size: 64px; color: var(--accent-color); opacity: 0.5;"></i>
+                        <h2 class="mt-3">Your cart is empty</h2>
+                        <p class="text-muted">Add some items to your cart before checkout</p>
+                        <a href="{% url 'shop' %}" class="btn-shop-now mt-3">
+                            <i class="bi bi-shop"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+    <script src="{% static 'js/store/checkout.js' %}"></script>
+
+    {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                {% for message in messages %}
+                    Swal.fire({
+                        icon: "{{ message.tags }}",
+                        title: "{{ message.tags|title }}",
+                        text: "{{ message|escapejs }}",
+                        confirmButtonText: "OK",
+                        background: "#ffffff",
+                        color: "#343a40",
+                        confirmButtonColor: "#8c0d4f",
+                        customClass: {
+                            popup: 'rounded-4 shadow'
+                        }
+                    });
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+    
+    <script>
+        // Only run these scripts if user is customer and cart has items
+        {% if user.is_authenticated and user.role_id == 2 and cart_items %}
+        // Update shipping cost and total based on delivery option
+        document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                updateTotals();
+            });
+        });
+
+        function updateTotals() {
+            const subtotal = {{ subtotal|default:0 }};
+            const selectedDelivery = document.querySelector('input[name="delivery"]:checked').value;
+            
+            let shipping = 0;
+            switch(selectedDelivery) {
+                case 'standard':
+                    shipping = 150;
+                    break;
+                case 'express':
+                    shipping = 299;
+                    break;
+                case 'same_day':
+                    shipping = 499;
+                    break;
+            }
+            
+            const tax = Math.round(subtotal * 0.05); // 5% GST
+            const total = subtotal + shipping + tax;
+            
+            document.getElementById('shippingCost').textContent = '₹' + shipping;
+            document.getElementById('taxAmount').textContent = '₹' + tax;
+            document.getElementById('totalAmount').textContent = '₹' + total;
+            document.getElementById('placeOrderTotal').textContent = total;
+        }
+
+        // Form validation
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            const requiredFields = ['email', 'phone', 'first_name', 'last_name', 'address', 'city', 'state', 'pincode'];
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email.value)) {
+                email.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            // Phone validation
+            const phone = document.getElementById('phone');
+            const phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(phone.value)) {
+                phone.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            // Pincode validation
+            const pincode = document.getElementById('pincode');
+            const pincodePattern = /^\d{6}$/;
+            if (!pincodePattern.test(pincode.value)) {
+                pincode.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show loading state
+                const btn = document.querySelector('.btn-place-order');
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+                btn.disabled = true;
+                
+                // Submit form
+                this.submit();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please fill all required fields correctly',
+                    confirmButtonColor: '#8c0d4f'
+                });
+            }
+        });
+
+        // Real-time validation
+        document.getElementById('phone').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        document.getElementById('pincode').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+        });
+        {% endif %}
+    </script>
+
+{% endblock %}

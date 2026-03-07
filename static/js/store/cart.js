@@ -37,7 +37,7 @@ function getCookie(name) {
 // Remove from cart function with SweetAlert confirmation
 function removeFromCart(encryptedId) {
     console.log('removeFromCart called with ID:', encryptedId);
-    
+    debugger;
     // Show confirmation dialog
     Swal.fire({
         title: 'Remove Item?',

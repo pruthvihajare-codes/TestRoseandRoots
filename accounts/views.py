@@ -39,7 +39,9 @@ def login_view(request):
             return redirect('/')
         
         if request.method == 'GET':
-            return render(request, 'account/login.html')
+            next_url = request.GET.get('next')
+            print(f"Next URL received in GET: {next_url}")
+            return render(request, 'account/login.html', {'next': next_url})
         
         if request.method == 'POST':
             try:
@@ -102,7 +104,9 @@ def login_view(request):
                     
                     messages.success(request, f'Welcome back, {user.full_name or user.email}!')
                     
-                    next_url = request.GET.get('next')
+                    next_url = request.POST.get('next')
+                    print(f"Next URL received in POST: {next_url}")
+
                     if next_url:
                         return redirect(next_url)
                     
@@ -228,7 +232,7 @@ def register_view(request):
                 first_name = request.POST.get('first_name', '').strip()
                 last_name = request.POST.get('last_name', '').strip()
                 email = request.POST.get('email', '').strip().lower()
-                phone = request.POST.get('phone', '').strip()  # Added phone field
+                phone = request.POST.get('phone', '').strip()
                 password = request.POST.get('password', '')
                 confirm_password = request.POST.get('confirm_password', '')
                 terms = request.POST.get('terms')
@@ -254,9 +258,8 @@ def register_view(request):
                 
                 # Phone validation (optional but if provided, validate format)
                 if phone:
-                    # Basic phone validation - adjust regex as per your requirements
                     import re
-                    phone_regex = r'^\+?1?\d{9,15}$'  # Simple international format
+                    phone_regex = r'^\+?1?\d{9,15}$'
                     if not re.match(phone_regex, phone):
                         errors['phone'] = 'Please enter a valid phone number.'
                 
@@ -280,11 +283,9 @@ def register_view(request):
                     errors['terms'] = 'You must agree to the terms and conditions.'
                 
                 if errors:
-                    # Store errors in messages
                     for field, error in errors.items():
                         messages.error(request, error)
                     
-                    # Pass form data back to template
                     context = {
                         'form_data': request.POST,
                         'errors': errors
@@ -293,26 +294,34 @@ def register_view(request):
                 
                 # Create user
                 try:
-                    user = CustomUser.objects.create_user(
-                        email=email,
-                        password=password,
-                        first_name=first_name,
-                        last_name=last_name,
-                        phone=phone,  # Added phone field
-                        full_name=f"{first_name} {last_name}".strip(),
-                        role_id=2,  # 👈 Set role_id to 2 for Customer
-                        user_type='customer',
-                    )
+                    from django.db import transaction
                     
-                    # Store password in password_storage table
-                    try:
-                        PasswordStorage.objects.create(
-                            user=user,
-                            password_text=password  # Note: This stores plain text password - consider encryption
+                    with transaction.atomic():
+                        user = CustomUser.objects.create_user(
+                            email=email,
+                            password=password,
+                            first_name=first_name,
+                            last_name=last_name,
+                            phone=phone,
+                            full_name=f"{first_name} {last_name}".strip(),
+                            role_id=2,
+                            user_type='customer',
                         )
-                    except Exception as password_storage_error:
-                        print(f"Password storage error: {password_storage_error}")
-                        # Don't fail registration if password storage fails, just log it
+                        
+                        # Create user profile automatically
+                        UserProfile.objects.create(
+                            user=user,
+                            # You can set default values here if needed
+                        )
+                        
+                        # Store password in password_storage table
+                        try:
+                            PasswordStorage.objects.create(
+                                user=user,
+                                password_text=password
+                            )
+                        except Exception as password_storage_error:
+                            print(f"Password storage error: {password_storage_error}")
                     
                 except Exception as create_error:
                     print(f"User creation error: {create_error}")
@@ -333,7 +342,7 @@ def register_view(request):
                 print(f"Register POST error: {post_error}")
                 messages.error(request, 'An error occurred during registration. Please try again.')
                 return render(request, 'account/register.html', {'form_data': request.POST})
-                
+               
     except Exception as e:
         print(f"Register view unexpected error: {e}")
         messages.error(request, 'Something went wrong. Please try again later.')

@@ -124,15 +124,19 @@
                             </div>
                             <div class="summary-row">
                                 <span>Shipping</span>
-                                {% if shipping > 0 %}
-                                    <span>₹{{ shipping|floatformat:0 }}</span>
-                                {% else %}
+                                {% if free_shipping_qualified %}
                                     <span class="free-shipping">Free</span>
+                                {% else %}
+                                    <span>₹150</span>
                                 {% endif %}
                             </div>
-                            {% if shipping == 0 %}
+                            {% if not free_shipping_qualified %}
                                 <div class="shipping-note">
-                                    <i class="bi bi-truck"></i> Free shipping on orders above ₹999
+                                    <i class="bi bi-truck"></i> Add ₹{{ remaining_for_free_shipping|floatformat:0 }} more for FREE shipping
+                                </div>
+                            {% else %}
+                                <div class="shipping-note free-shipping-achieved">
+                                    <i class="bi bi-check-circle-fill"></i> You've qualified for FREE shipping!
                                 </div>
                             {% endif %}
                             <div class="summary-row total">
@@ -140,6 +144,23 @@
                                 <span class="total-amount">₹{{ total|floatformat:0 }}</span>
                             </div>
                         </div>
+
+                        <!-- Free Shipping Progress Bar -->
+                        {% if not free_shipping_qualified %}
+                        <div class="free-shipping-progress mt-3 mb-3">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {% widthratio subtotal 2000 100 %}%; background: var(--accent-color);"
+                                     aria-valuenow="{{ subtotal }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="2000">
+                                </div>
+                            </div>
+                            {% comment %} <small class="text-muted mt-1 d-block">
+                                ₹{{ subtotal|floatformat:0 }} of ₹2000
+                            </small> {% endcomment %}
+                        </div>
+                        {% endif %}
 
                         <!-- Checkout Button with Role-Based Access -->
                         {% if user.is_authenticated and user.role_id == 2 %}

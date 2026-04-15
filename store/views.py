@@ -28,6 +28,68 @@ from accounts.views import *
 
 logger = logging.getLogger(__name__)
 
+# accounts/views.py
+import time
+import logging
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
+logger = logging.getLogger(__name__)
+
+def check_session_validity(request):
+    """
+    Check if user session is valid
+    Used by JavaScript to detect back/forward navigation
+    """
+    try:
+        # Always return a response, don't require authentication
+        if request.user.is_authenticated:
+            # Check if session flags are present
+            auth_flow = request.session.get('auth_flow_completed', False)
+            logout_completed = request.session.get('logout_completed', False)
+            
+            # If logout was completed, session is invalid
+            if logout_completed:
+                return JsonResponse({
+                    'valid': False,
+                    'authenticated': False,
+                    'message': 'Session expired'
+                })
+            
+            # Check if session is still valid (not expired)
+            session_created = request.session.get('session_created_at')
+            if session_created:
+                current_time = time.time()
+                # Session older than 30 minutes?
+                if current_time - session_created > 1800:  # 30 minutes
+                    return JsonResponse({
+                        'valid': False,
+                        'authenticated': False,
+                        'message': 'Session expired'
+                    })
+            
+            return JsonResponse({
+                'valid': True,
+                'authenticated': True,
+                'auth_flow_completed': auth_flow,
+                'role_id': request.session.get('role_id')
+            })
+        else:
+            # User is not authenticated - this is valid for login page
+            return JsonResponse({
+                'valid': False,
+                'authenticated': False,
+                'message': 'Not authenticated',
+                'redirect_to_login': False  # Don't auto-redirect
+            })
+    except Exception as e:
+        logger.error(f"Session check error: {e}")
+        return JsonResponse({
+            'valid': False,
+            'authenticated': False,
+            'message': 'Error checking session'
+        })
+
 def shop_view(request):
     try:
         """
@@ -208,8 +270,6 @@ def shop_view(request):
         messages.error(request, "An error occurred while loading the shop. Please try again later.")
         return redirect('home')
 
-# views.py - Add product detail view
-
 def product_detail(request):
     """
     Display single product details with reviews
@@ -219,6 +279,32 @@ def product_detail(request):
     if not encrypted_id:
         messages.error(request, 'Product ID is required.')
         return redirect('shop')
+    
+    # ========== ADD ACCESS VALIDATION ==========
+    # Check if this is a valid access (not direct)
+    referer = request.META.get('HTTP_REFERER')
+    
+    # Skip validation for admin (optional)
+    if request.user.is_authenticated and hasattr(request.user, 'role_id') and request.user.role_id == 1:
+        pass  # Admin can bypass
+    else:
+        # Check if there's a valid referrer
+        if not referer:
+            messages.warning(request, 'Please browse products from our shop page.')
+            return redirect('shop')
+        
+        # Check if referrer is from shop, home, or previous product
+        valid_referrers = ['/shop/', '/', '/product-detail/']
+        is_valid = False
+        for valid in valid_referrers:
+            if valid in referer:
+                is_valid = True
+                break
+        
+        if not is_valid:
+            messages.warning(request, 'Please browse products from our shop page.')
+            return redirect('shop')
+    # ==========================================
     
     try:
         # Decrypt the ID
@@ -250,39 +336,29 @@ def product_detail(request):
             primary_image = related.images.filter(is_active=1).first()
             related.primary_image = primary_image.image_path if primary_image else None
         
-        # Get admin user's WhatsApp number (assuming admin has role_id=1)
+        # Get admin user's WhatsApp number
         admin_user = CustomUser.objects.filter(role_id=1, is_active=True).first()
-        admin_whatsapp = admin_user.phone if admin_user else '918805433102'  # Fallback number
+        admin_whatsapp = admin_user.phone if admin_user else '918805433102'
         
-        # Get all reviews (rest of your review code remains the same)
+        # Get all active reviews for this bouquet
         all_reviews = bouquet.reviews.filter(is_active=1).select_related('user')
         
         # Check if current user has already reviewed
         user_review = None
-        other_reviews = all_reviews
-        
         if request.user.is_authenticated:
             user_review = all_reviews.filter(user=request.user).first()
-            if user_review:
-                other_reviews = all_reviews.exclude(user=request.user)
-            else:
-                other_reviews = all_reviews
-        else:
-            other_reviews = all_reviews
         
-        # Combine with user's review first, then paginate
-        if user_review:
-            combined_reviews = [user_review] + list(other_reviews)
-        else:
-            combined_reviews = list(other_reviews)
+        # Get ALL reviews (including user's review) for pagination
+        combined_reviews = list(all_reviews.order_by('-created_at'))
         
-        # Paginate the combined list
+        # Paginate all reviews
         paginator = Paginator(combined_reviews, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
         # Calculate average rating
         avg_rating = all_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+        total_reviews = all_reviews.count()
         
         context = {
             'bouquet': bouquet,
@@ -292,9 +368,9 @@ def product_detail(request):
             'reviews': page_obj,
             'page_obj': page_obj,
             'avg_rating': round(avg_rating, 1),
-            'total_reviews': all_reviews.count(),
+            'total_reviews': total_reviews,
             'user_review': user_review,
-            'admin_whatsapp': admin_whatsapp,  # Pass admin WhatsApp number
+            'admin_whatsapp': admin_whatsapp,
             "MEDIA_URL": settings.MEDIA_URL,
         }
         return render(request, 'store/product_detail.html', context)

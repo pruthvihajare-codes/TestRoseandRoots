@@ -34,7 +34,7 @@
                         </div>
                         <div class="top-bar-item">
                             <i class="bi bi-envelope-fill top-bar-icon"></i>
-                            <a href="mailto:support@gmail.com" class="top-bar-contact">support@gmail.com</a>
+                            <a href="mailto:littlecraftone.support@gmail.com" class="top-bar-contact">littlecraftone.support@gmail.com</a>
                         </div>
                     </div>
                 </div>
@@ -166,8 +166,8 @@
                         <!-- Common menu items for all -->
                         <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                         <li class="nav-menu-item"><a href="{% url 'shop' %}" class="nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'about_us' %}" class="nav-menu-link {% if request.path == '/about_us/' %}active{% endif %}">About</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'contact_us' %}" class="nav-menu-link {% if request.path == '/contact-us/' %}active{% endif %}">Contact</a></li>
                         <li class="nav-menu-item"><a href="{% url 'cart_view' %}" class="nav-menu-link {% if request.path == '/cart_view' %}active{% endif %}">Cart</a></li>
                         {% comment %} <li class="nav-menu-item"><a href="{% url 'checkout' %}" class="nav-menu-link {% if request.path == '/checkout/' %}active{% endif %}">Checkout</a></li> {% endcomment %}
                     
@@ -176,8 +176,8 @@
                         <!-- Common menu items for all -->
                         <li class="nav-menu-item"><a href="/" class="nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                         <li class="nav-menu-item"><a href="{% url 'shop' %}" class="nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">About</a></li>
-                        <li class="nav-menu-item"><a href="#" class="nav-menu-link">Contact</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'about_us' %}" class="nav-menu-link {% if request.path == '/about_us/' %}active{% endif %}">About</a></li>
+                        <li class="nav-menu-item"><a href="{% url 'contact_us' %}" class="nav-menu-link {% if request.path == '/contact-us/' %}active{% endif %}">Contact</a></li>
                         <li class="nav-menu-item"><a href="{% url 'cart_view' %}" class="nav-menu-link {% if request.path == '/cart_view' %}active{% endif %}">Cart</a></li>
                     
                     <!-- Admin Menu (role_id = 1) -->
@@ -647,6 +647,10 @@
             
             <!-- Customer Only Menu Items -->
             {% if user.is_authenticated and user.role_id == 2 %}
+                <li class="mobile-nav-menu-item"><a href="/" class="mobile-nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'shop' %}" class="mobile-nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'about_us' %}" class="mobile-nav-menu-link {% if request.path == '/about_us/' %}active{% endif %}">About</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'contact_us' %}" class="mobile-nav-menu-link {% if request.path == '/contact-us/' %}active{% endif %}">Contact</a></li>
                 <li class="mobile-nav-menu-item"><a href="{% url 'cart_view' %}" class="mobile-nav-menu-link {% if request.path == '/cart_view' %}active{% endif %}">Cart</a></li>
                 {% comment %} <li class="mobile-nav-menu-item"><a href="{% url 'checkout' %}" class="mobile-nav-menu-link {% if request.path == '/checkout/' %}active{% endif %}">Checkout</a></li> {% endcomment %}
             
@@ -655,8 +659,8 @@
                 <!-- Common menu items for all -->
                 <li class="mobile-nav-menu-item"><a href="/" class="mobile-nav-menu-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
                 <li class="mobile-nav-menu-item"><a href="{% url 'shop' %}" class="mobile-nav-menu-link {% if request.path == '/shop/' %}active{% endif %}">Shop</a></li>
-                <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">About</a></li>
-                <li class="mobile-nav-menu-item"><a href="#" class="mobile-nav-menu-link">Contact</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'about_us' %}" class="mobile-nav-menu-link {% if request.path == '/about_us/' %}active{% endif %}">About</a></li>
+                <li class="mobile-nav-menu-item"><a href="{% url 'contact_us' %}" class="mobile-nav-menu-link {% if request.path == '/contact-us/' %}active{% endif %}">Contact</a></li>
                 <li class="mobile-nav-menu-item"><a href="{% url 'cart_view' %}" class="mobile-nav-menu-link {% if request.path == '/cart_view' %}active{% endif %}">Cart</a></li>
             
             <!-- Admin Menu (role_id = 1) -->
@@ -771,21 +775,122 @@
     <!-- Footer -->
     <footer class="footer-section">
         <div class="container">
-            <div class="row">
-                <div class="col-12 text-center py-4">
-                    <p class="mb-0">&copy; {% now "Y" %} LittleCraftOne. All rights reserved.</p>
+            <!-- Main Footer Content -->
+            <div class="footer-main">
+                <div class="row g-4">
+                    <!-- Brand Column -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-brand">
+                            <a href="/" class="footer-logo">LittleCraftOne</a>
+                            <p class="footer-tagline">Crafting Your Curiosity</p>
+                            <p class="footer-description">
+                                Creating beautiful, handcrafted treasures that tell your story. 
+                                Every piece is made with love, care, and attention to detail.
+                            </p>
+                            <div class="footer-social">
+                                <a href="https://www.instagram.com/littlecraftone" target="_blank" class="social-icon">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                                <a href="https://wa.me/918805433102" target="_blank" class="social-icon">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                                <a href="mailto:littlecraftone.support@gmail.com" class="social-icon">
+                                    <i class="bi bi-envelope"></i>
+                                </a>
+                                <a href="#" class="social-icon">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Links Column -->
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="/"><i class="bi bi-chevron-right"></i> Home</a></li>
+                                <li><a href="{% url 'shop' %}"><i class="bi bi-chevron-right"></i> Shop</a></li>
+                                <li><a href="{% url 'about_us' %}"><i class="bi bi-chevron-right"></i> About Us</a></li>
+                                <li><a href="{% url 'contact_us' %}"><i class="bi bi-chevron-right"></i> Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Service Column -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-links">
+                            <h4>Customer Service</h4>
+                            <ul>
+                                <li><a href="#"><i class="bi bi-chevron-right"></i> FAQs</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-right"></i> Shipping Info</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-right"></i> Returns & Refunds</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-right"></i> Privacy Policy</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-right"></i> Terms of Service</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact & Newsletter Column -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h4>Get in Touch</h4>
+                            <div class="contact-item">
+                                <i class="bi bi-whatsapp"></i>
+                                <div>
+                                    <strong>WhatsApp</strong>
+                                    <a href="https://wa.me/918805433102">+91 88054 33102</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="bi bi-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <a href="mailto:littlecraftone.support@gmail.com">littlecraftone.support@gmail.com</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="bi bi-clock"></i>
+                                <div>
+                                    <strong>Response Time</strong>
+                                    <span>Within 24 hours</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Newsletter -->
+                        <div class="newsletter">
+                            <h5>Join Our Newsletter</h5>
+                            <div class="newsletter-form">
+                                <input type="email" placeholder="Your email address" id="footerNewsletterEmail">
+                                <button onclick="subscribeFooterNewsletter()">
+                                    <i class="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                            <small>Get updates on new arrivals & exclusive offers</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright Section -->
+            <div class="footer-copyright">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; {% now "Y" %} <strong>LittleCraftOne</strong>. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p>Crafted with <i class="bi bi-heart-fill"></i> in India | <i class="bi bi-flower2"></i> "Crafting Your Curiosity"</p>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Remove or fix main.js -->
-    <!-- <script src="{% static 'js/main.js' %}"></script> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1095,7 +1200,6 @@
 
         // Function to load cart modal content
         function loadCartModal() {
-            ; // <-- ADD THIS
             console.log('loadCartModal called');
             $('#cartModalBody').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
             
@@ -1103,12 +1207,10 @@
                 url: '/cart_modal',
                 type: 'GET',
                 success: function(data) {
-                    ; // <-- ADD THIS
                     console.log('AJAX success, data:', data);
                     $('#cartModalBody').html(data);
                 },
                 error: function(xhr, status, error) {
-                    ; // <-- ADD THIS
                     console.error('Error loading cart modal:', error);
                     console.error('Status:', status);
                     console.error('Response:', xhr.responseText);
@@ -1212,19 +1314,16 @@
 
         // Get initial cart count on page load
         $(document).ready(function() {
-            ; // <-- ADD THIS
             console.log('Getting initial cart count');
             
             $.ajax({
                 url: '/get_cart_count',
                 type: 'GET',
                 success: function(data) {
-                    ; // <-- ADD THIS
                     console.log('Cart count response:', data);
                     updateCartBadge(data.count);
                 },
                 error: function(xhr, status, error) {
-                    ; // <-- ADD THIS
                     console.error('Error fetching cart count:', error);
                     console.error('Status:', status);
                     console.error('Response:', xhr.responseText);
@@ -1253,6 +1352,150 @@
 
     </script>
     
+    <script>
+        // Detect browser back/forward navigation
+        (function() {
+            // Check session validity on page load
+            function checkSessionValidity() {
+                fetch('/check-session/', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.valid && data.authenticated === false) {
+                        // Session is invalid, show message and redirect if needed
+                        console.log('Session invalid detected');
+                        
+                        // Check if we're on a protected page
+                        const protectedPages = ['/dashboard/', '/admin-dashboard/', '/profile/', '/checkout/'];
+                        const currentPath = window.location.pathname;
+                        
+                        if (protectedPages.some(page => currentPath.startsWith(page))) {
+                            // Redirect to home with message
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Session Expired',
+                                text: 'Your session has expired. Redirecting to home page...',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#8c0d4f',
+                                allowOutsideClick: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                window.location.href = '/';
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Session check error:', error);
+                });
+            }
+            
+            // Check session on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                checkSessionValidity();
+            });
+            
+            // Check session on popstate (back/forward navigation)
+            window.addEventListener('popstate', function(event) {
+                console.log('Browser back/forward navigation detected');
+                checkSessionValidity();
+            });
+            
+            // Optional: Check session periodically (every 30 seconds)
+            setInterval(checkSessionValidity, 30000);
+        })();
+    </script>
+
+    <script>
+        // static/js/navigation_guard.js
+        (function() {
+            // Prevent back/forward navigation issues
+            let sessionValid = true;
+            
+            // Don't run on login/register pages
+            if (window.location.pathname === '/login/' || window.location.pathname === '/register/') {
+                return;
+            }
+            
+            // Add session validation header to all AJAX requests
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const headers = args[1]?.headers || {};
+                headers['X-Session-Valid'] = getSessionId();
+                args[1] = { ...args[1], headers };
+                return originalFetch.apply(this, args);
+            };
+            
+            // Function to get session ID from cookie or meta tag
+            function getSessionId() {
+                const metaTag = document.querySelector('meta[name="session-id"]');
+                if (metaTag) {
+                    return metaTag.getAttribute('content');
+                }
+                return '';
+            }
+            
+            // Add session ID to meta tag on page load
+            function addSessionMetaTag() {
+                const meta = document.createElement('meta');
+                meta.name = 'session-id';
+                meta.content = document.cookie.match(/sessionid=([^;]+)/)?.[1] || '';
+                document.head.appendChild(meta);
+            }
+            
+            // Handle page visibility changes (when user comes back to tab)
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    // Don't check session on login page
+                    if (window.location.pathname === '/login/' || window.location.pathname === '/register/') {
+                        return;
+                    }
+                    
+                    // Check if session is still valid
+                    fetch('/check-session/', {
+                        headers: {
+                            'X-Session-Valid': getSessionId()
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (!data.valid && data.authenticated === false) {
+                            // Session invalid, but only redirect if we're not on login page
+                            if (window.location.pathname !== '/login/' && window.location.pathname !== '/register/') {
+                                window.location.href = '/';
+                            }
+                        }
+                    }).catch(error => {
+                        console.error('Session check failed:', error);
+                    });
+                }
+            });
+            
+            // Prevent back button from showing cached pages
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    // Page loaded from bfcache (back/forward navigation)
+                    // Don't reload on login page
+                    if (window.location.pathname !== '/login/' && window.location.pathname !== '/register/') {
+                        window.location.reload();
+                    }
+                }
+            });
+            
+            // Add session meta tag on load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', addSessionMetaTag);
+            } else {
+                addSessionMetaTag();
+            }
+        })();
+    </script>
+
     {% block extra_js %}{% endblock %}
 
 </body>
